@@ -15,7 +15,12 @@ numExportsPerImage = 0
 def readDoneImages():
 	if os.path.exists("doneimages.txt"):
 		f = open("doneimages.txt", "r")
-		return f.readlines()
+		filecontents = f.readlines()
+		d = []
+		for line in filecontents:
+			e = line[:-1]
+			d.append(e)
+		return d
 	return []
 
 def collectTodo(path):
@@ -75,7 +80,8 @@ def key(event):
 
 def writeDoneImages(doneImages):
 	f = open("doneimages.txt", "a")
-	f.writelines(doneImages)
+	print(f"writing doneImages{doneImages}")
+	f.writelines("%s\n" % i for i in doneImages)
 	f.close()
     	
 def loadNextAndMarkAsDone():
@@ -83,6 +89,10 @@ def loadNextAndMarkAsDone():
 	global doneImages
 	global itemsToDo
 	global numExportsPerImage
+	print(len(itemsToDo))
+	
+	if doneImages == None:
+		doneImages = []
 	
 	if currentPath:
 		doneImages.append(currentPath)
@@ -111,14 +121,21 @@ def deleteImage():
 	canvas.delete(imagesprite)
     
 
+doneImages = readDoneImages()
+
 if __name__ == "__main__":
 	print(f"Arguments count: {len(sys.argv)}")
 	for i, arg in enumerate(sys.argv):
 		print(f"Argument {i:>6}: {arg}")        
-	doneImages = readDoneImages()
+
+	print(doneImages)
 	inDirectory = sys.argv[1]
 	outDirectory = sys.argv[2]
 	itemsToDo = collectTodo(inDirectory)
+	print(len(itemsToDo))
+	filteredToDos = [x for x in itemsToDo if x not in doneImages]
+	itemsToDo = filteredToDos
+	print(len(itemsToDo))
 
 	root = Tk()
 	root.geometry('1500x1000')
